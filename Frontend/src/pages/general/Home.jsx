@@ -1,74 +1,58 @@
-import React, { useRef, useEffect } from 'react';
-import '../../styles/reels.css';
-
-const sampleVideos = [
-    {
-        src: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        desc: 'Delicious homemade pizza with fresh ingredients and tasty toppings. Order now from our partner store.',
-        store: '#'
-    },
-    {
-        src: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        desc: 'Handcrafted pastries made daily — warm, flaky, and irresistible. Visit the store for specials.',
-        store: '#'
-    },
-    {
-        src: 'https://www.w3schools.com/html/movie.mp4',
-        desc: 'Refreshing beverages and healthy bowls to keep you energized all day.',
-        store: '#'
-    }
-];
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import '../../styles/reels.css'
+import ReelFeed from '../../components/ReelFeed'
 
 const Home = () => {
-    const containerRef = useRef(null);
-    const videoRefs = useRef([]);
+    const [ videos, setVideos ] = useState([])
 
     useEffect(() => {
-        videoRefs.current = videoRefs.current.slice(0, sampleVideos.length);
+        axios.get("http://localhost:3000/api/food", { withCredentials: true })
+            .then(response => {
+                console.log(response.data);
+                setVideos(response.data.foodItems)
+            })
+            .catch(() => { /* noop: optionally handle error */ })
+    }, [])
 
-        const obs = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    const vid = entry.target;
-                    if (entry.isIntersecting && entry.intersectionRatio > 0.45) {
-                        vid.play().catch(() => {});
-                    } else {
-                        vid.pause();
-                    }
-                });
-            },
-            { threshold: [0.45, 0.75] }
-        );
+    async function likeVideo(item) {
+        try {
+            const response = await axios.post("http://localhost:3000/api/food/like", { foodId: item._id }, {withCredentials: true})
 
-        videoRefs.current.forEach((v) => {
-            if (v) obs.observe(v);
-        });
+            if(response.data.like){
+                console.log("Video liked");
+                setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likeCount: (v.likeCount || 0) + 1 } : v))
+            }else{
+                console.log("Video unliked");
+                setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likeCount: (v.likeCount || 0) - 1 } : v))
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
-        return () => obs.disconnect();
-    }, []);
+    async function saveVideo(item) {
+        try {
+            const response = await axios.post("http://localhost:3000/api/food/save", { foodId: item._id }, { withCredentials: true })
+            
+            if(response.data.save){
+                setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, savesCount: (v.savesCount || 0) + 1 } : v))
+            }else{
+                setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, savesCount: (v.savesCount || 0) - 1 } : v))
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     return (
-        <div className="reels-container" ref={containerRef}>
-            {sampleVideos.map((item, idx) => (
-                <section className="reel" key={idx}>
-                    <video
-                        ref={(el) => (videoRefs.current[idx] = el)}
-                        className="reel-video"
-                        src={item.src}
-                        muted
-                        playsInline
-                        loop
-                        preload="metadata"
-                    />
-
-                    <div className="overlay">
-                        <div className="description">{item.desc}</div>
-                        <a className="visit-btn" href={item.store}>Visit store</a>
-                    </div>
-                </section>
-            ))}
-        </div>
-    );
-};
+        <ReelFeed
+            items={videos}
+            onLike={likeVideo}
+            onSave={saveVideo}
+            emptyMessage="No videos available."
+        />
+    )
+}
 
 export default Home;

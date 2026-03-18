@@ -16,12 +16,13 @@ const upload = multer({
 only food partner can add a food item*/
 router.post("/", 
     authMiddleware.authFoodPartnerMiddleware,
-    foodController.getFoodItems);
+    upload.single('video'),
+    foodController.createFoodItem);
 
     /* GET /api/food/ [protected] */
 router.get("/",
      authMiddleware.authFoodPartnerMiddleware,
-     foodController.getFoodItems)
+     foodController.getFoodItems);
 
 
 
