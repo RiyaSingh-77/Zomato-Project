@@ -7,7 +7,7 @@ const Home = () => {
     const [ videos, setVideos ] = useState([])
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/food", { withCredentials: true })
+        axios.get("https://zomato-backend-ajqm.onrender.com/api/food", { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 setVideos(response.data.foodItems)
@@ -17,7 +17,7 @@ const Home = () => {
 
     async function likeVideo(item) {
         try {
-            const response = await axios.post("http://localhost:3000/api/food/like", { foodId: item._id }, {withCredentials: true})
+            const response = await axios.post("https://zomato-backend-ajqm.onrender.com/api/food/like", { foodId: item._id }, {withCredentials: true})
 
             if(response.data.like){
                 console.log("Video liked");
@@ -33,7 +33,7 @@ const Home = () => {
 
     async function saveVideo(item) {
         try {
-            const response = await axios.post("http://localhost:3000/api/food/save", { foodId: item._id }, { withCredentials: true })
+            const response = await axios.post("https://zomato-backend-ajqm.onrender.com/api/food/save", { foodId: item._id }, { withCredentials: true })
             
             if(response.data.save){
                 setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, savesCount: (v.savesCount || 0) + 1 } : v))

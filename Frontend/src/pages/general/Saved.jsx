@@ -6,7 +6,7 @@ const Saved = () => {
     const [savedVideos, setSavedVideos] = useState([])
 
     const fetchSaved = () => {
-        axios.get("http://localhost:3000/api/food/saved", { withCredentials: true })
+        axios.get("https://zomato-backend-ajqm.onrender.com/api/food/saved", { withCredentials: true })
             .then(response => {
                 setSavedVideos(response.data.foodItems || [])
             })
