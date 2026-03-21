@@ -14,7 +14,7 @@ const app = express();
 app.use(cookieParser()); // USED AS A MIDDLEWARE
 app.use(express.json());
 app.use(cors({
-    origin: "http://munchly-dev-feed.vercel.app",
+    origin: "https://munchly-dev-feed.vercel.app",
     credentials: true
 }));
 
