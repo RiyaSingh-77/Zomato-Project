@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios';
+import axios from '../utils/axios';
 import '../../styles/reels.css' 
 import ReelFeed from '../../components/ReelFeed'
 
