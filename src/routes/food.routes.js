@@ -38,6 +38,11 @@ router.get("/",
     foodController.getSavedFoodItems
 )
 
+router.delete("/:id",
+    authMiddleware.authFoodPartnerMiddleware,
+    foodController.deleteFood
+);
+
 
      
 

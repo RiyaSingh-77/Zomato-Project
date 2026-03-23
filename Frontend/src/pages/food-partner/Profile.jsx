@@ -16,6 +16,19 @@ const Profile = () => {
             })
     }, [id])
 
+    const handleDelete = async (foodId) => {
+        if(!window.confirm("Are you sure you want to delete this?")) return;
+        try {
+            await axios.delete(
+                `https://zomato-backend-ajqm.onrender.com/api/food/${foodId}`,
+                { withCredentials: true }
+            )
+            setVideos(videos.filter(v => v._id !== foodId))
+        } catch (error) {
+            alert("Failed to delete. Try again!")
+        }
+    }
+
     return (
         <main className="profile-page">
             <section className="profile-header">
@@ -50,13 +63,29 @@ const Profile = () => {
 
             <section className="profile-grid" aria-label="Videos">
                 {videos.map((v) => (
-                    <div key={v._id} className="profile-grid-item">
+                    <div key={v._id} className="profile-grid-item" style={{ position: 'relative' }}>
                         <video
                             className="profile-grid-video"
                             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                             src={v.video}
                             muted
                         />
+                        <button
+                            onClick={() => handleDelete(v._id)}
+                            style={{
+                                position: 'absolute',
+                                top: '8px',
+                                right: '8px',
+                                background: 'red',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '28px',
+                                height: '28px',
+                                cursor: 'pointer',
+                                fontSize: '16px'
+                            }}
+                        >×</button>
                     </div>
                 ))}
             </section>

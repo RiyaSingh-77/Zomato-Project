@@ -132,6 +132,30 @@ async function getSavedFoodItems(req, res) {
     }
 }
 
+async function deleteFood(req, res) {
+    try {
+        const { id } = req.params;
+        const foodPartner = req.foodPartner;
+
+        const foodItem = await foodModel.findById(id);
+        
+        if (!foodItem) {
+            return res.status(404).json({ message: "Food item not found" });
+        }
+
+        if (foodItem.foodPartner.toString() !== foodPartner._id.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
+        await foodModel.findByIdAndDelete(id);
+        res.status(200).json({ message: "Food deleted successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
+
 
 
 
@@ -140,5 +164,6 @@ module.exports = {
     getFoodItems,
     likeFood,
     saveFood,
-    getSavedFoodItems
+    getSavedFoodItems,
+    deleteFood
 }
