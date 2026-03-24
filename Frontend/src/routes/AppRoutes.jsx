@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-
+import RoleSelect from '../pages/RoleSelect'
 import UserLogin from '../pages/UserLogin'
 import UserRegister from '../pages/UserRegister'
 import FoodPartnerLogin from '../pages/FoodPartnerLogin'
@@ -15,6 +15,7 @@ import Saved from '../pages/general/Saved'
 
 
 
+
 const AppRoutes = () => {
   return (
     <Router>
@@ -24,7 +25,7 @@ const AppRoutes = () => {
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/food-partner/register" element={<FoodPartnerRegister />} />
         <Route path="/food-partner/login" element={<FoodPartnerLogin />} />
-        <Route path="/" element={<Navigate to="/user/login" replace />} />
+        <Route path="/" element={<RoleSelect />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
         <Route path = "/create-food" element={<CreateFood />} />
         <Route path="/food-partner/profile/:id" element={<Profile />} />
