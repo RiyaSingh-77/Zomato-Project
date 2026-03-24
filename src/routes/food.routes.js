@@ -21,7 +21,6 @@ router.post("/",
 
     /* GET /api/food/ [protected] */
 router.get("/",
-     authMiddleware.authFoodPartnerMiddleware,
      foodController.getFoodItems);
 
      router .post("/like",
