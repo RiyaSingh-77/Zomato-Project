@@ -7,14 +7,27 @@ const Profile = () => {
     const { id } = useParams()
     const [profile, setProfile] = useState(null)
     const [videos, setVideos] = useState([])
+    const [currentFoodPartner, setCurrentFoodPartner] = useState(null) // ← add this
 
     useEffect(() => {
+        // Fetch the profile
         axios.get(`https://zomato-backend-ajqm.onrender.com/api/food-partner/${id}`, { withCredentials: true })
             .then(response => {
                 setProfile(response.data.foodPartner)
                 setVideos(response.data.foodPartner.foodItems)
             })
+
+        // Check who is currently logged in
+        axios.get(`https://zomato-backend-ajqm.onrender.com/api/food-partner/me`, { withCredentials: true })
+            .then(response => {
+                setCurrentFoodPartner(response.data.foodPartner)
+            })
+            .catch(() => {
+                setCurrentFoodPartner(null) // not logged in as food partner
+            })
     }, [id])
+
+    const isOwner = currentFoodPartner?._id.toString() === id // ← true only if viewing own profile
 
     const handleDelete = async (foodId) => {
         if(!window.confirm("Are you sure you want to delete this?")) return;
@@ -25,14 +38,14 @@ const Profile = () => {
             )
             setVideos(videos.filter(v => v._id !== foodId))
         } catch (error) {
-    if (error.response?.status === 403) {
-        alert("You are not authorized to delete this video. Only the food partner who uploaded it can delete their own content.")
-    } else if (error.response?.status === 401) {
-        alert("You are not logged in. Please log in to continue.")
-    } else {
-        alert("Failed to delete. Try again!")
-    }
-}
+            if (error.response?.status === 403) {
+                alert("You are not authorized to delete this video.")
+            } else if (error.response?.status === 401) {
+                alert("You are not logged in as a food partner.")
+            } else {
+                alert("Failed to delete. Try again!")
+            }
+        }
     }
 
     return (
@@ -76,22 +89,25 @@ const Profile = () => {
                             src={v.video}
                             muted
                         />
-                        <button
-                            onClick={() => handleDelete(v._id)}
-                            style={{
-                                position: 'absolute',
-                                top: '8px',
-                                right: '8px',
-                                background: 'red',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '28px',
-                                height: '28px',
-                                cursor: 'pointer',
-                                fontSize: '16px'
-                            }}
-                        >×</button>
+                        {/* ← Only show delete button if owner */}
+                        {isOwner && (
+                            <button
+                                onClick={() => handleDelete(v._id)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '8px',
+                                    right: '8px',
+                                    background: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '28px',
+                                    height: '28px',
+                                    cursor: 'pointer',
+                                    fontSize: '16px'
+                                }}
+                            >×</button>
+                        )}
                     </div>
                 ))}
             </section>
